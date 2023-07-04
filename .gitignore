@@ -1,0 +1,8 @@
+/node_modules
+/dist
+.env
+*.tsbuildinfo
+pnpm-lock.yaml
+yarn.lock
+package-lock.json
+**/*test.*

@@ -1,0 +1,32 @@
+{
+	"type": "module",
+	"main": "src/index.ts",
+	"scripts": {
+		"build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && node scripts/change-import-statements.cjs",
+		"start": "npx prisma generate && NODE_ENV=production node dist/index.js",
+		"dev": "npx prisma generate && pnpm build && NODE_ENV=development tsx watch src/index.ts",
+		"format": "prettier --ignore-path .gitignore --write . --ignore-unknown"
+	},
+	"dependencies": {
+		"@discordjs/builders": "1.6.3",
+		"@lazuee/poe.js": "0.1.7",
+		"@prisma/client": "4.16.1",
+		"axios": "1.4.0",
+		"captcha-canvas": "3.2.1",
+		"discord.js": "14.11.0",
+		"fast-glob": "3.2.12",
+		"set-interval-async": "3.0.3",
+		"skia-canvas": "1.0.1"
+	},
+	"devDependencies": {
+		"@trivago/prettier-plugin-sort-imports": "4.1.1",
+		"@types/node": "20.3.2",
+		"dotenv": "16.3.1",
+		"prettier": "2.8.8",
+		"prisma": "4.16.1",
+		"tsc-alias": "1.8.6",
+		"tslib": "2.6.0",
+		"tsx": "3.12.7",
+		"typescript": "5.1.3"
+	}
+}

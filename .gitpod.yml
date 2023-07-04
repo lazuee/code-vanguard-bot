@@ -1,0 +1,11 @@
+tasks:
+    - init: pnpm install && pnpm run dev
+
+vscode:
+    extensions:
+        - EditorConfig.EditorConfig
+        - usernamehw.errorlens
+        - eamodio.gitlens
+        - esbenp.prettier-vscode
+        - yoavbls.pretty-ts-errors
+        - shardulm94.trailing-spaces
