@@ -1,4 +1,12 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Message } from "discord.js";
+import {
+	ActionRowBuilder,
+	ButtonBuilder,
+	ButtonStyle,
+	ChannelType,
+	EmbedBuilder,
+	Message,
+	ThreadAutoArchiveDuration,
+} from "discord.js";
 
 import { Conversation } from "@lazuee/poe.js";
 import { SetIntervalAsyncTimer, clearIntervalAsync, setIntervalAsync } from "set-interval-async";
@@ -30,6 +38,54 @@ export default new Command("gpt", "Ask me anything")
 			const row = new ActionRowBuilder<ButtonBuilder>().addComponents(button);
 
 			await message.channel.send({ content: "", embeds: [embed], components: [row] });
+		},
+		button: async function (interaction) {
+			if (!interaction.channel?.isTextBased()) return;
+
+			switch (interaction.customId.split("-").at(-1)) {
+				case "thread":
+					{
+						if (!("threads" in interaction.channel)) return;
+						const thread = interaction.channel.threads.cache.find(
+							(x) => x.name === interaction.user.username
+						);
+						if (thread) {
+							if (thread.joinable) await thread.join();
+							await thread.setRateLimitPerUser(3);
+							const member = (await thread.members.fetch()).find((x) => x.id === interaction.user.id);
+							if (member) {
+								thread.send(`<@${interaction.user.id}>`).then((x) => x.delete());
+
+								await interaction.reply({
+									content: `You've already thread! Please use <#${thread.id}>`,
+									ephemeral: true,
+								});
+								return;
+							} else await thread.delete();
+						}
+
+						const thread_start = await interaction.channel.threads.create({
+							name: interaction.user.username,
+							autoArchiveDuration: ThreadAutoArchiveDuration.OneHour,
+							//@ts-ignore
+							type: ChannelType.PrivateThread,
+						});
+
+						if (thread_start.joinable) await thread_start.join();
+						await thread_start.setRateLimitPerUser(3);
+						const msg = await thread_start.send(`Hello, coder!\n\nAsk me anything related to programming.`);
+						await msg.pin();
+						await thread_start.members.add(interaction.user.id);
+
+						await interaction.reply({
+							content: `You've created a thread! <#${thread_start.id}>`,
+							ephemeral: true,
+						});
+					}
+					break;
+				default:
+					return;
+			}
 		},
 	})
 	.useEvent({
